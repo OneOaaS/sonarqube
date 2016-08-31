@@ -111,6 +111,7 @@ public class Category1Suite {
   @ClassRule
   public static final Orchestrator ORCHESTRATOR = Orchestrator.builderEnv()
     .setServerProperty("sonar.notifications.delay", "1")
+    .setServerProperty("sonar.web.javaAdditionalOpts", "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=8000")
     .addPlugin(pluginArtifact("property-sets-plugin"))
     .addPlugin(pluginArtifact("sonar-subcategories-plugin"))
 
