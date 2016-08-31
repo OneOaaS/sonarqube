@@ -22,12 +22,13 @@ package org.sonar.server.plugins;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
+import java.util.Properties;
 import org.junit.Before;
 import org.junit.Test;
-import org.sonar.api.config.MapSettings;
-import org.sonar.api.config.Settings;
+import org.sonar.api.config.PropertyDefinitions;
 import org.sonar.api.utils.SonarException;
 import org.sonar.api.utils.UriReader;
+import org.sonar.server.settings.SystemSettings;
 import org.sonar.updatecenter.common.UpdateCenter;
 import org.sonar.updatecenter.common.Version;
 
@@ -42,18 +43,16 @@ import static org.mockito.Mockito.when;
 
 public class UpdateCenterClientTest {
 
-  static final String BASE_URL = "http://update.sonarsource.org";
-  UriReader reader;
-  Settings settings;
-
-  UpdateCenterClient underTest;
+  private static final String BASE_URL = "http://update.sonarsource.org";
+  private UriReader reader = mock(UriReader.class);
+  private SystemSettings settings = new SystemSettings(new PropertyDefinitions(), new Properties());
+  private UpdateCenterClient underTest;
 
   @Before
   public void startServer() throws Exception {
     reader = mock(UriReader.class);
-    settings = new MapSettings()
-      .setProperty(UpdateCenterClient.URL_PROPERTY, BASE_URL)
-      .setProperty(UpdateCenterClient.ACTIVATION_PROPERTY, true);
+    settings.setProperty(UpdateCenterClient.URL_PROPERTY, BASE_URL);
+    settings.setProperty(UpdateCenterClient.ACTIVATION_PROPERTY, true);
     underTest = new UpdateCenterClient(reader, settings);
   }
 

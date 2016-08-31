@@ -23,13 +23,13 @@ import javax.annotation.Nullable;
 import org.apache.commons.lang.StringUtils;
 import org.picocontainer.Startable;
 import org.sonar.api.CoreProperties;
-import org.sonar.api.server.ServerSide;
-import org.sonar.api.config.Settings;
 import org.sonar.api.security.LoginPasswordAuthenticator;
 import org.sonar.api.security.SecurityRealm;
+import org.sonar.api.server.ServerSide;
 import org.sonar.api.utils.SonarException;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
+import org.sonar.server.settings.SystemSettings;
 
 /**
  * @since 2.14
@@ -40,7 +40,9 @@ public class SecurityRealmFactory implements Startable {
   private final boolean ignoreStartupFailure;
   private final SecurityRealm realm;
 
-  public SecurityRealmFactory(Settings settings, SecurityRealm[] realms, LoginPasswordAuthenticator[] authenticators) {
+  // use SystemSettings but not Settings to enforce loading of properties from sonar.properties
+  // but not from database
+  public SecurityRealmFactory(SystemSettings settings, SecurityRealm[] realms, LoginPasswordAuthenticator[] authenticators) {
     ignoreStartupFailure = settings.getBoolean(CoreProperties.CORE_AUTHENTICATOR_IGNORE_STARTUP_FAILURE);
     String realmName = settings.getString(CoreProperties.CORE_AUTHENTICATOR_REALM);
     String className = settings.getString(CoreProperties.CORE_AUTHENTICATOR_CLASS);
@@ -63,15 +65,15 @@ public class SecurityRealmFactory implements Startable {
     realm = selectedRealm;
   }
 
-  public SecurityRealmFactory(Settings settings, LoginPasswordAuthenticator[] authenticators) {
+  public SecurityRealmFactory(SystemSettings settings, LoginPasswordAuthenticator[] authenticators) {
     this(settings, new SecurityRealm[0], authenticators);
   }
 
-  public SecurityRealmFactory(Settings settings, SecurityRealm[] realms) {
+  public SecurityRealmFactory(SystemSettings settings, SecurityRealm[] realms) {
     this(settings, realms, new LoginPasswordAuthenticator[0]);
   }
 
-  public SecurityRealmFactory(Settings settings) {
+  public SecurityRealmFactory(SystemSettings settings) {
     this(settings, new SecurityRealm[0], new LoginPasswordAuthenticator[0]);
   }
 

@@ -29,9 +29,9 @@ import org.apache.commons.io.IOUtils;
 import org.sonar.api.Properties;
 import org.sonar.api.Property;
 import org.sonar.api.PropertyType;
-import org.sonar.api.config.Settings;
 import org.sonar.api.utils.UriReader;
 import org.sonar.api.utils.log.Loggers;
+import org.sonar.server.settings.SystemSettings;
 import org.sonar.updatecenter.common.UpdateCenter;
 import org.sonar.updatecenter.common.UpdateCenterDeserializer;
 import org.sonar.updatecenter.common.UpdateCenterDeserializer.Mode;
@@ -72,7 +72,7 @@ public class UpdateCenterClient {
   private UpdateCenter pluginCenter = null;
   private long lastRefreshDate = 0;
 
-  public UpdateCenterClient(UriReader uriReader, Settings settings) throws URISyntaxException {
+  public UpdateCenterClient(UriReader uriReader, SystemSettings settings) throws URISyntaxException {
     this.uriReader = uriReader;
     this.uri = new URI(settings.getString(URL_PROPERTY));
     this.isActivated = settings.getBoolean(ACTIVATION_PROPERTY);

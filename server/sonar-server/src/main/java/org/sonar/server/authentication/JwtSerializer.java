@@ -20,10 +20,7 @@
 
 package org.sonar.server.authentication;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-import static io.jsonwebtoken.impl.crypto.MacProvider.generateKey;
-import static java.util.Objects.requireNonNull;
-
+import com.google.common.annotations.VisibleForTesting;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtBuilder;
@@ -39,11 +36,15 @@ import javax.annotation.concurrent.Immutable;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import org.sonar.api.Startable;
-import org.sonar.api.config.Settings;
 import org.sonar.api.server.ServerSide;
 import org.sonar.api.utils.System2;
 import org.sonar.core.util.UuidFactory;
 import org.sonar.server.exceptions.UnauthorizedException;
+import org.sonar.server.settings.SystemSettings;
+
+import static com.google.common.base.Preconditions.checkNotNull;
+import static io.jsonwebtoken.impl.crypto.MacProvider.generateKey;
+import static java.util.Objects.requireNonNull;
 
 /**
  * This class can be used to encode or decode a JWT token
@@ -55,25 +56,30 @@ public class JwtSerializer implements Startable {
 
   private static final SignatureAlgorithm SIGNATURE_ALGORITHM = SignatureAlgorithm.HS256;
 
-  private final Settings settings;
+  // do not use Settings but SystemSettings to enforce loading from sonar.properties
+  // but not from database
+  private final SystemSettings settings;
   private final System2 system2;
   private final UuidFactory uuidFactory;
 
   private SecretKey secretKey;
 
-  public JwtSerializer(Settings settings, System2 system2, UuidFactory uuidFactory) {
+  public JwtSerializer(SystemSettings settings, System2 system2, UuidFactory uuidFactory) {
     this.settings = settings;
     this.system2 = system2;
     this.uuidFactory = uuidFactory;
+  }
+
+  @VisibleForTesting
+  SecretKey getSecretKey() {
+    return secretKey;
   }
 
   @Override
   public void start() {
     String encodedKey = settings.getString(SECRET_KEY_PROPERTY);
     if (encodedKey == null) {
-      SecretKey newSecretKey = generateSecretKey();
-      settings.setProperty(SECRET_KEY_PROPERTY, Base64.getEncoder().encodeToString(newSecretKey.getEncoded()));
-      this.secretKey = newSecretKey;
+      this.secretKey = generateSecretKey();
     } else {
       this.secretKey = decodeSecretKeyProperty(encodedKey);
     }
