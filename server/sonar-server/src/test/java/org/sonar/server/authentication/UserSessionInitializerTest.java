@@ -20,6 +20,24 @@
 
 package org.sonar.server.authentication;
 
+import java.util.Optional;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.sonar.api.config.Settings;
+import org.sonar.api.config.MapSettings;
+import org.sonar.api.utils.System2;
+import org.sonar.db.DbClient;
+import org.sonar.db.DbSession;
+import org.sonar.db.DbTester;
+import org.sonar.db.user.UserDto;
+import org.sonar.server.exceptions.UnauthorizedException;
+import org.sonar.server.user.ServerUserSession;
+import org.sonar.server.user.ThreadLocalUserSession;
+import org.sonar.server.user.UserSession;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
@@ -31,23 +49,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 import static org.sonar.db.user.UserTesting.newUserDto;
-
-import java.util.Optional;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.sonar.api.config.Settings;
-import org.sonar.api.utils.System2;
-import org.sonar.db.DbClient;
-import org.sonar.db.DbSession;
-import org.sonar.db.DbTester;
-import org.sonar.db.user.UserDto;
-import org.sonar.server.exceptions.UnauthorizedException;
-import org.sonar.server.user.ServerUserSession;
-import org.sonar.server.user.ThreadLocalUserSession;
-import org.sonar.server.user.UserSession;
 
 public class UserSessionInitializerTest {
 
@@ -66,7 +67,7 @@ public class UserSessionInitializerTest {
   JwtHttpHandler jwtHttpHandler = mock(JwtHttpHandler.class);
   BasicAuthenticator basicAuthenticator = mock(BasicAuthenticator.class);
 
-  Settings settings = new Settings();
+  Settings settings = new MapSettings();
 
   UserDto user = newUserDto();
 
@@ -173,13 +174,6 @@ public class UserSessionInitializerTest {
 
     verify(response).setStatus(401);
     verifyZeroInteractions(userSession);
-  }
-
-  @Test
-  public void remove_user_session() throws Exception {
-    underTest.removeUserSession();
-
-    verify(userSession).remove();
   }
 
   private void assertPathIsIgnored(String path) {

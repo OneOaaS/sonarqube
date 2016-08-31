@@ -20,9 +20,6 @@
 
 package org.sonar.server.authentication;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.sonar.server.authentication.JwtSerializer.JwtSession;
-
 import com.google.common.collect.ImmutableMap;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -36,12 +33,16 @@ import javax.crypto.spec.SecretKeySpec;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.sonar.api.config.MapSettings;
 import org.sonar.api.config.Settings;
 import org.sonar.api.utils.DateUtils;
 import org.sonar.api.utils.System2;
 import org.sonar.core.util.UuidFactory;
 import org.sonar.core.util.UuidFactoryImpl;
 import org.sonar.server.exceptions.UnauthorizedException;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.sonar.server.authentication.JwtSerializer.JwtSession;
 
 public class JwtSerializerTest {
 
@@ -52,7 +53,7 @@ public class JwtSerializerTest {
 
   static final String USER_LOGIN = "john";
 
-  Settings settings = new Settings();
+  Settings settings = new MapSettings();
   System2 system2 = System2.INSTANCE;
   UuidFactory uuidFactory = UuidFactoryImpl.INSTANCE;
 
@@ -78,7 +79,7 @@ public class JwtSerializerTest {
 
     assertThat(token).isNotEmpty();
     Claims claims = underTest.decode(token).get();
-    // Check expiration date it set to more than 9 seconds in the futur
+    // Check expiration date it set to more than 9 seconds in the future
     assertThat(claims.getExpiration()).isAfterOrEqualsTo(new Date(now.getTime() + 9 * 1000));
   }
 
@@ -107,7 +108,7 @@ public class JwtSerializerTest {
     assertThat(claims.getSubject()).isEqualTo(USER_LOGIN);
     assertThat(claims.getExpiration()).isNotNull();
     assertThat(claims.getIssuedAt()).isNotNull();
-    // Check expiration date it set to more than 19 minutes in the futur
+    // Check expiration date it set to more than 19 minutes in the future
     assertThat(claims.getExpiration()).isAfterOrEqualsTo(new Date(now.getTime() + 19 * 60 * 1000));
   }
 

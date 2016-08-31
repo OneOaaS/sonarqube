@@ -19,16 +19,27 @@
  */
 package org.sonar.ce.settings;
 
-public interface ThreadLocalSettings {
-  /**
-   * Loads up-to-date Settings specific to the current thread.
-   *
-   * @throws IllegalStateException if the current thread already has specific Settings
-   */
-  void load();
+import org.sonar.api.ce.ComputeEngineSide;
+import org.sonar.api.config.Settings;
+import org.sonar.db.DbClient;
 
-  /**
-   * Clears the Settings specific to the current thread (if any).
-   */
-  void unload();
+// FIXME move to CE
+@ComputeEngineSide
+public class ProjectSettingsFactory {
+
+  private final Settings globalSettings;
+  private final DbClient dbClient;
+
+  public ProjectSettingsFactory(Settings globalSettings, DbClient dbClient) {
+    this.globalSettings = globalSettings;
+    this.dbClient = dbClient;
+  }
+
+  public Settings newProjectSettings(String projectKey) {
+    Settings projectSettings = new ProjectSettings(globalSettings);
+    dbClient.propertiesDao()
+      .selectProjectProperties(projectKey)
+      .forEach(property -> projectSettings.setProperty(property.getKey(), property.getValue()));
+    return projectSettings;
+  }
 }

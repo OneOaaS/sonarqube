@@ -30,6 +30,7 @@ import org.sonar.api.rules.AnnotationRuleParser;
 import org.sonar.api.rules.XMLRuleParser;
 import org.sonar.api.server.rule.RulesDefinitionXmlLoader;
 import org.sonar.ce.CeModule;
+import org.sonar.ce.settings.ProjectSettingsFactory;
 import org.sonar.core.component.DefaultResourceTypes;
 import org.sonar.core.timemachine.Periods;
 import org.sonar.db.permission.PermissionRepository;
@@ -139,6 +140,7 @@ import org.sonar.server.permission.PermissionService;
 import org.sonar.server.permission.PermissionUpdater;
 import org.sonar.server.permission.ws.PermissionsWsModule;
 import org.sonar.server.platform.BackendCleanup;
+import org.sonar.server.platform.PersistentSettings;
 import org.sonar.server.platform.ServerLogging;
 import org.sonar.server.platform.SettingsChangeNotifier;
 import org.sonar.server.platform.monitoring.DatabaseMonitor;
@@ -233,7 +235,6 @@ import org.sonar.server.rule.ws.RuleMapper;
 import org.sonar.server.rule.ws.RuleQueryFactory;
 import org.sonar.server.rule.ws.RulesWs;
 import org.sonar.server.rule.ws.TagsAction;
-import org.sonar.server.setting.ProjectSettingsFactory;
 import org.sonar.server.setting.ws.SettingsWsModule;
 import org.sonar.server.source.HtmlSourceDecorator;
 import org.sonar.server.source.SourceService;
@@ -581,6 +582,7 @@ public class PlatformLevel4 extends PlatformLevel {
       TestIndexer.class,
 
       // Settings
+      PersistentSettings.class,
       PropertiesWs.class,
       SettingsWsModule.class,
 

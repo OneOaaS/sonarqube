@@ -24,6 +24,7 @@ import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import org.junit.Before;
 import org.junit.Test;
+import org.sonar.api.config.MapSettings;
 import org.sonar.api.config.Settings;
 import org.sonar.api.utils.SonarException;
 import org.sonar.api.utils.UriReader;
@@ -50,7 +51,7 @@ public class UpdateCenterClientTest {
   @Before
   public void startServer() throws Exception {
     reader = mock(UriReader.class);
-    settings = new Settings()
+    settings = new MapSettings()
       .setProperty(UpdateCenterClient.URL_PROPERTY, BASE_URL)
       .setProperty(UpdateCenterClient.ACTIVATION_PROPERTY, true);
     underTest = new UpdateCenterClient(reader, settings);

@@ -20,10 +20,10 @@
 package org.sonar.server.platform.platformlevel;
 
 import org.sonar.api.utils.UriReader;
-import org.sonar.server.platform.PersistentSettings;
 import org.sonar.server.platform.ServerIdGenerator;
 import org.sonar.server.platform.ServerIdLoader;
 import org.sonar.server.platform.StartupMetadataPersister;
+import org.sonar.server.settings.ThreadLocalSettings;
 import org.sonar.server.startup.LogServerId;
 
 public class PlatformLevel3 extends PlatformLevel {
@@ -35,7 +35,7 @@ public class PlatformLevel3 extends PlatformLevel {
   protected void configureLevel() {
     addIfStartupLeader(StartupMetadataPersister.class);
     add(
-      PersistentSettings.class,
+      ThreadLocalSettings.class,
       UriReader.class,
       ServerIdLoader.class,
       ServerIdGenerator.class,
